@@ -45,6 +45,9 @@ public class HttpConfig {
         readTimeOut=DEFAULT_READ_TIMEOUT;
     }
 
-
-
+    public HttpConfig(boolean useCaches, int connectTimeOut, int readTimeOut) {
+        this.useCaches = useCaches;
+        this.connectTimeOut = connectTimeOut;
+        this.readTimeOut = readTimeOut;
+    }
 }
