@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * Created by lml on 2014/9/22.
  */
 public class HttpUtils {
-    public static String addPrefix(String url)
+    public static String addProtocol(String url)
     {
         String pString="(http:\\/\\/$)(.*)";
         Pattern pattern= Pattern.compile(pString);

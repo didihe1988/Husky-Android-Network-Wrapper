@@ -32,6 +32,7 @@ public class HttpRequest {
     private Handler handler;
     private HttpConfig config;
     private String url;
+    private Map<String,String> params;
 
     public Handler getHandler() {
         return handler;
@@ -57,19 +58,36 @@ public class HttpRequest {
         this.url = url;
     }
 
-    public HttpCallback getCallback() {
+   /* public HttpCallback getCallback() {
         return callback;
-    }
+    }*/
 
     public void setCallback(HttpCallback callback) {
         this.callback = callback;
     }
 
-    public HttpRequest(String url,HttpConfig config,HttpCallback callback) {
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
+
+    public HttpRequest(String url, Map<String, String> params,HttpCallback callback) {
+        this.handler = new HttpHandler();
+        this.config = new HttpConfig();
+        this.url = url;
+        this.params = params;
         this.callback = callback;
-        this.handler =new HttpHandler();
+    }
+
+    public HttpRequest(String url, Map<String, String> params,HttpCallback callback,HttpConfig config) {
+        this.handler = new HttpHandler();
         this.config = config;
         this.url = url;
+        this.params = params;
+        this.callback = callback;
     }
 
     private class HttpHandler extends  Handler
