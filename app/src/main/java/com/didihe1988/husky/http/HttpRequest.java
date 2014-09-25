@@ -3,7 +3,7 @@ package com.didihe1988.husky.http;
 import android.os.Handler;
 import android.os.Message;
 
-import com.didihe1988.husky.constant.HttpConstant;
+import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
 
 import java.io.BufferedReader;
@@ -28,11 +28,21 @@ import java.util.Map;
     HttpRequest request=new HttpRequest(new Handler(),,);
 */
 public class HttpRequest {
+
+    private RequestMethod method;
     private HttpCallback callback;
     private Handler handler;
     private HttpConfig config;
     private String url;
     private Map<String,String> params;
+
+    public RequestMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(RequestMethod method) {
+        this.method = method;
+    }
 
     public Handler getHandler() {
         return handler;
@@ -74,7 +84,18 @@ public class HttpRequest {
         this.params = params;
     }
 
-    public HttpRequest(String url, Map<String, String> params,HttpCallback callback) {
+
+    public HttpRequest(RequestMethod method,String url, Map<String, String> params,HttpCallback callback,HttpConfig config) {
+        this.method=method;
+        this.handler = new HttpHandler();
+        this.config = config;
+        this.url = url;
+        this.params = params;
+        this.callback = callback;
+    }
+
+    public HttpRequest(RequestMethod method,String url, Map<String, String> params,HttpCallback callback) {
+        this.method=method;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
         this.url = url;
@@ -82,13 +103,15 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(String url, Map<String, String> params,HttpCallback callback,HttpConfig config) {
+    public HttpRequest(String url, Map<String, String> params,HttpCallback callback) {
+        this.method=RequestMethod.GET;
         this.handler = new HttpHandler();
-        this.config = config;
+        this.config = new HttpConfig();
         this.url = url;
         this.params = params;
         this.callback = callback;
     }
+
 
     private class HttpHandler extends  Handler
     {

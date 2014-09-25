@@ -4,20 +4,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.didihe1988.husky.constant.HttpConstant;
 import com.didihe1988.husky.constant.MessageType;
+import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.utils.HttpUtils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.AbstractQueue;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
+import static com.didihe1988.husky.constant.RequestMethod.*;
+import static com.didihe1988.husky.constant.RequestMethod.GET;
 
 /**
  * Created by lml on 2014/9/23.
@@ -62,13 +71,13 @@ public class RequestQueue {
                     try {
                         queue.wait();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                e.printStackTrace();
+            }
+        }
 
                 HttpRequest request=queue.pop();
-                Object obj=connect(request);
-                sendMessage(request.getHandler(),obj);
+                Object obj=execute(request);
+                sendMessage(request.getHandler(), obj);
             }
 
         }
@@ -76,22 +85,38 @@ public class RequestQueue {
         /*
             synchronized   only one request at a time
          */
-        private synchronized Object connect(HttpRequest request)
+        private synchronized Object execute(HttpRequest request)
+        {
+           switch (request.getMethod())
+           {
+               case POST:
+                   return executePost(request);
+               case GET:
+               default:
+                   return executeGet(request);
+
+           }
+        }
+
+        private Object executeGet(HttpRequest request)
         {
             try {
                 URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
                 System.out.println(url.toString());
                 HttpConfig config=request.getConfig();
                 HttpURLConnection connection=(HttpURLConnection)url.openConnection();
-                connection.setRequestMethod(HttpConstant.METHOD.GET.name());
+                connection.setRequestMethod(GET.name());
                 connection.setUseCaches(config.isUseCaches());
                 connection.setReadTimeout(config.getReadTimeOut());
                 connection.setConnectTimeout(config.getConnectTimeOut());
-
-                for(Map.Entry<String,String> param:request.getParams().entrySet())
+                if(request.getParams()!=null)
                 {
-                    connection.setRequestProperty(param.getKey(),param.getValue());
+                    for(Map.Entry<String,String> param:request.getParams().entrySet())
+                    {
+                        connection.setRequestProperty(param.getKey(),param.getValue());
+                    }
                 }
+
                 BufferedReader in=new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 StringBuffer response=new StringBuffer();
@@ -112,6 +137,96 @@ public class RequestQueue {
                 return e;
             }
         }
+
+        private Object executePost(HttpRequest request)
+        {
+            try {
+                URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
+                System.out.println(url.toString());
+                HttpConfig config=request.getConfig();
+                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                connection.setRequestMethod(POST.name());
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(config.isUseCaches());
+                connection.setReadTimeout(config.getReadTimeOut());
+                connection.setConnectTimeout(config.getConnectTimeOut());
+                connection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+
+                /*
+                BufferedReader in=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuffer response=new StringBuffer();
+                while( (inputLine=in.readLine())!=null)
+                {
+                    response.append(inputLine);
+                }
+                in.close();*/
+                /*
+                OutputStream out=connection.getOutputStream();
+                BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+                writer.write(getParamString(request.getParams()));
+                writer.flush();
+                writer.close();*/
+
+                connection.connect();
+                if(request.getParams()!=null)
+                {
+                    OutputStream out=connection.getOutputStream();
+                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
+                    writer.write(getParamString(request.getParams()));
+                    writer.flush();
+                    writer.close();
+                }
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        connection.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                connection.disconnect();
+                return response.toString();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                return e;
+            } catch (UnsupportedEncodingException e)
+            {
+                e.printStackTrace();
+                return e;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return e;
+            }
+        }
+
+        private String getParamString(Map<String,String> params) throws UnsupportedEncodingException {
+            StringBuilder builder=new StringBuilder();
+            boolean isFirst=true;
+            for(Map.Entry<String,String> entry:params.entrySet())
+            {
+                if(isFirst)
+                {
+                    isFirst=false;
+                }
+                else
+                {
+                    builder.append("&");
+                }
+                builder.append(URLEncoder.encode(entry.getKey(),"UTF-8"));
+                builder.append("=");
+                builder.append(URLEncoder.encode(entry.getValue(),"UTF-8"));
+            }
+            return builder.toString();
+        }
+
+        //{ "Name": "Foo", "Id": 1234, "Rank": 7 }
+
+
+
 
         private void sendMessage(Handler handler,Object obj)
         {
