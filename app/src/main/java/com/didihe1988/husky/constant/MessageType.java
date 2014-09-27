@@ -6,4 +6,5 @@ package com.didihe1988.husky.constant;
 public class MessageType {
     public static final  int REQUEST_SUCCESS=1;
     public static final  int REQUEST_FAILURE=2;
+    public static final  int REQUEST_PROGRESS=3;
 }

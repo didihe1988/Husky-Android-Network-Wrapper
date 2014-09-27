@@ -4,15 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.didihe1988.husky.constant.RequestMethod;
-import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.param.Params;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.util.Map;
 
 /**
  * Created by lml on 2014/9/23.
@@ -31,7 +23,7 @@ import java.util.Map;
 public class HttpRequest {
 
     private RequestMethod method;
-    private HttpCallback callback;
+    private BaseCallback callback;
     private Handler handler;
     private HttpConfig config;
     private String url;
@@ -73,7 +65,7 @@ public class HttpRequest {
         return callback;
     }*/
 
-    public void setCallback(HttpCallback callback) {
+    public void setCallback(BaseCallback callback) {
         this.callback = callback;
     }
 
@@ -85,7 +77,7 @@ public class HttpRequest {
         this.params = params;
     }
 
-    public HttpRequest(RequestMethod method,String url,Params params,HttpCallback callback,HttpConfig config) {
+    public HttpRequest(RequestMethod method,String url,Params params,BaseCallback callback,HttpConfig config) {
         this.method=method;
         this.handler = new HttpHandler();
         this.config = config;
@@ -94,7 +86,7 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(RequestMethod method,String url,Params params,HttpCallback callback) {
+    public HttpRequest(RequestMethod method,String url,Params params,BaseCallback callback) {
         this.method=method;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
@@ -103,7 +95,7 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(String url,Params params,HttpCallback callback) {
+    public HttpRequest(String url,Params params,BaseCallback callback) {
         this.method=RequestMethod.GET;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();

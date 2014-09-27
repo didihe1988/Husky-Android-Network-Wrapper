@@ -4,16 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.didihe1988.husky.constant.RequestMethod;
-import com.didihe1988.husky.http.HttpCallback;
-import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
 import com.didihe1988.husky.http.RequestQueue;
+import com.didihe1988.husky.http.FileUploadCallback;
 import com.didihe1988.husky.http.param.FileParams;
-import com.didihe1988.husky.http.param.Params;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,9 +59,10 @@ public class MainActivity extends Activity{
         File file1=new File("/mnt/sdcard/beauty.jpg");
         FileParams fileParams=new FileParams();
         fileParams.putParamEntry("language","java");
-        fileParams.putFileEntry("image",file);
+        fileParams.putParamEntry("school","uestc");
+        fileParams.putFileEntry("image", file);
         fileParams.putFileEntry("beauty",file1);
-        HttpRequest request2=new HttpRequest(RequestMethod.POST,"192.168.0.102:5000/upload_file",fileParams,new HttpCallback() {
+        HttpRequest request2=new HttpRequest(RequestMethod.POST,"192.168.0.102:5000/upload_file",fileParams,new FileUploadCallback(){
             @Override
             public void onSuceess(Object object) {
                 System.out.println("UploadFile onSuccess: "+object);
@@ -74,6 +71,12 @@ public class MainActivity extends Activity{
             @Override
             public void onFailure(Object object) {
                 System.out.println("UploadFile onFailure: "+object);
+            }
+
+
+            @Override
+            public void onProgressUpdate(int fileCount, int curFile, long count, long cur) {
+                System.out.println(fileCount+" "+curFile+" "+count+" "+cur);
             }
         });
         requestQueue.add(request2);

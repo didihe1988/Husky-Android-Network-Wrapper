@@ -22,9 +22,11 @@ import static android.os.Handler.Callback;
     });
     写library真是乐趣多多
 */
-public abstract class HttpCallback{
-
-   public void setCallback(Message msg)
+public abstract class BaseCallback {
+    /*
+    缺省包内可见 可以在HttpHandler内调用
+     */
+   void setCallback(Message msg)
    {
         /*
         判断是onSuceess还是onFailure

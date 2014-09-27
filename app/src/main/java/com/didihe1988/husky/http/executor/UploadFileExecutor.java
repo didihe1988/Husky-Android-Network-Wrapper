@@ -1,8 +1,12 @@
 package com.didihe1988.husky.http.executor;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.didihe1988.husky.constant.ExecuteType;
+import com.didihe1988.husky.constant.MessageType;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
@@ -22,7 +26,9 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import static com.didihe1988.husky.constant.RequestMethod.GET;
 
@@ -62,7 +68,7 @@ public class UploadFileExecutor extends Executor{
             connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + this.boundry);
             DataOutputStream out=new DataOutputStream(connection.getOutputStream());
             addFormField(request.getParams().getParamMap(),out);
-            addFilePart(((FileParams)request.getParams()).getFileMap(),out);
+            addFilePart(((FileParams)request.getParams()).getFileMap(),out,request.getHandler());
 
             return getResponse(connection.getInputStream());
         } catch (ProtocolException e) {
@@ -89,9 +95,10 @@ public class UploadFileExecutor extends Executor{
     *   ... contents of file1.txt ...
     *   --AaB03x--
     */
-    private void addFilePart(Map<String,File> fileMap,DataOutputStream out) throws IOException {
+    private void addFilePart(Map<String,File> fileMap,DataOutputStream out,Handler handler) throws IOException {
 
         //DataOutputStream out = new DataOutputStream(outputStream);
+        int index=0;
         for(Map.Entry entry:fileMap.entrySet())
         {
             File file= (File) entry.getValue();
@@ -101,15 +108,36 @@ public class UploadFileExecutor extends Executor{
             DataInputStream in=new DataInputStream(new FileInputStream(file));
             int bytes=0;
             byte[] buffer=new byte[1024];
+            //two variable for progress
+            long cur=0;
+            long count=file.length();
+            
             while ((bytes=in.read(buffer))!=-1)
             {
                 out.write(buffer,0,bytes);
+                cur+=bytes;
+                sendProgressMessage(handler,fileMap.size(),index,cur,count);
             }
+
             out.writeBytes(this.crlf);
+            index++;
         }
         out.writeBytes(this.twoHyphens+this.boundry+this.twoHyphens+this.crlf);
         out.flush();
         out.close();
+    }
+
+    private void sendProgressMessage(Handler handler,int fileCount,int curFile,long count,long cur)
+    {
+        Message message=Message.obtain();
+        message.what= MessageType.REQUEST_PROGRESS;
+        Bundle bundle=new Bundle();
+        bundle.putInt("fileCount",fileCount);
+        bundle.putInt("curFile",curFile);
+        bundle.putLong("count",count);
+        bundle.putLong("cur",cur);
+        message.setData(bundle);
+        handler.sendMessage(message);
     }
 
     private void addFormField(Map<String,String> paramsMap,DataOutputStream out) throws IOException {
