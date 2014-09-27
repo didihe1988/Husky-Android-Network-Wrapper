@@ -19,14 +19,22 @@ def post():
 
 @app.route('/upload_file', methods=['POST'])
 def post_file():
-
+    print(request.form)
     image = request.files['image']
     filename = image.filename
     print(filename)
     path = 'tmp/' + filename
     print(path)
     image.save(path)
-    return str(path)
+
+    beauty = request.files['beauty']
+    filename = beauty.filename
+    print(filename)
+    path = 'tmp/' + filename
+    print(path)
+    beauty.save(path)
+
+    return 'success'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

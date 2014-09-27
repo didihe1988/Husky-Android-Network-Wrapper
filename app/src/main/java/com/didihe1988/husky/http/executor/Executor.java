@@ -40,7 +40,7 @@ public abstract class Executor {
             {
                 return new UploadFileExecutor();
             }
-            return new UploadFileExecutor();
+            return new PostExecutor();
         }
     }
 

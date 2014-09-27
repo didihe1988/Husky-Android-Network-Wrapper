@@ -6,15 +6,18 @@ import com.didihe1988.husky.constant.ExecuteType;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
+import com.didihe1988.husky.http.param.FileParams;
 import com.didihe1988.husky.utils.HttpUtils;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -57,32 +60,9 @@ public class UploadFileExecutor extends Executor{
             connection.setRequestProperty("Connection", "Keep-Alive");
             connection.setRequestProperty("Cache-Control", "no-cache");
             connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + this.boundry);
-
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            /*
-             *   --AaB03x
-             *   content-disposition: form-data; name="pics"; filename="file1.txt"
-             *   Content-Type: text/plain
-             *   (Don't forget to add a crlf to make this line empty.I spent whole afternoon to fix this bug.)
-             *   ... contents of file1.txt ...
-             *   --AaB03x--
-             */
-            out.writeBytes(this.twoHyphens+this.boundry+this.crlf);
-            //Content-Disposition: form-data; name="image";filename="test.jpg"
-            out.writeBytes("Content-Disposition: form-data; name=\"" +"image"+ "\";filename=\"" +"test.jpg" + "\"" + this.crlf);
-            out.writeBytes("Content-Type:"+ URLConnection.guessContentTypeFromName("test.jpg")+this.crlf+this.crlf);
-            String path="/mnt/sdcard/test.jpg";
-            DataInputStream in=new DataInputStream(new FileInputStream(path));
-            int bytes=0;
-            byte[] buffer=new byte[1024];
-            while ((bytes=in.read(buffer))!=-1)
-            {
-                out.write(buffer,0,bytes);
-            }
-            out.writeBytes(this.crlf);
-            out.writeBytes(this.twoHyphens+this.boundry+this.twoHyphens+this.crlf);
-            out.flush();
-            out.close();
+            DataOutputStream out=new DataOutputStream(connection.getOutputStream());
+            addFormField(request.getParams().getParamMap(),out);
+            addFilePart(((FileParams)request.getParams()).getFileMap(),out);
 
             return getResponse(connection.getInputStream());
         } catch (ProtocolException e) {
@@ -100,4 +80,47 @@ public class UploadFileExecutor extends Executor{
             }
         }
     }
+
+    /*
+    *   --AaB03x
+    *   content-disposition: form-data; name="pics"; filename="file1.txt"
+    *   Content-Type: text/plain
+    *   (Don't forget to add a crlf to make this line empty.I spent whole afternoon to fix this bug.)
+    *   ... contents of file1.txt ...
+    *   --AaB03x--
+    */
+    private void addFilePart(Map<String,File> fileMap,DataOutputStream out) throws IOException {
+
+        //DataOutputStream out = new DataOutputStream(outputStream);
+        for(Map.Entry entry:fileMap.entrySet())
+        {
+            File file= (File) entry.getValue();
+            out.writeBytes(this.twoHyphens+this.boundry+this.crlf);
+            out.writeBytes("Content-Disposition: form-data; name=\"" +entry.getKey()+ "\";filename=\"" +file.getName() + "\"" + this.crlf);
+            out.writeBytes("Content-Type:"+ URLConnection.guessContentTypeFromName(file.getName())+this.crlf+this.crlf);
+            DataInputStream in=new DataInputStream(new FileInputStream(file));
+            int bytes=0;
+            byte[] buffer=new byte[1024];
+            while ((bytes=in.read(buffer))!=-1)
+            {
+                out.write(buffer,0,bytes);
+            }
+            out.writeBytes(this.crlf);
+        }
+        out.writeBytes(this.twoHyphens+this.boundry+this.twoHyphens+this.crlf);
+        out.flush();
+        out.close();
+    }
+
+    private void addFormField(Map<String,String> paramsMap,DataOutputStream out) throws IOException {
+        for(Map.Entry entry:paramsMap.entrySet())
+        {
+            out.writeBytes(this.twoHyphens+this.boundry+this.crlf);
+            out.writeBytes("Content-Disposition: form-data; name=\"" +entry.getKey()+ "\""+this.crlf);
+            out.writeBytes(this.crlf);
+            out.writeBytes(entry.getValue()+this.crlf);
+        }
+    }
+
+
 }

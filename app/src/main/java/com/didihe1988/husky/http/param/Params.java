@@ -27,6 +27,11 @@ public class Params {
         this.paramMap=paramMap;
     }
 
+    public void putParamEntry(String name,String value)
+    {
+        paramMap.put(name,value);
+    }
+
 
 
 

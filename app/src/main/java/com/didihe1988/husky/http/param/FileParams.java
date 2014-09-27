@@ -34,4 +34,9 @@ public class FileParams extends Params{
         super(paramMap);
         this.fileMap=fileMap;
     }
+
+    public void putFileEntry(String name,File file)
+    {
+        this.fileMap.put(name,file);
+    }
 }
