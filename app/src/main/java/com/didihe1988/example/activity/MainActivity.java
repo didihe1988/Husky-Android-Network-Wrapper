@@ -22,16 +22,16 @@ public class MainActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String url="192.168.0.104:8080/picker/json/user/1";
+        /*
+        String url="192.168.0.102:5000/get_normal";
+
         Map<String,String> params=new HashMap<String, String>();
         RequestQueue requestQueue=new RequestQueue();
-        /*
+
         HttpRequest request=new HttpRequest(url,null,new HttpCallback() {
             @Override
             public void onSuceess(Object object) {
-
                 System.out.println("onSuccess: "+object);
-
             }
 
             @Override
@@ -39,8 +39,8 @@ public class MainActivity extends Activity{
                 System.out.println(object);
             }
         });
-       requestQueue.add(request);*/
-
+       requestQueue.add(request);
+        /*
         params.put("age","2");
         params.put("name","Jack");
         params.put("weight","98");
@@ -55,6 +55,19 @@ public class MainActivity extends Activity{
                 System.out.println("Post onFailure: "+object);
             }
         });
-        requestQueue.add(request1);
+        requestQueue.add(request1);*/
+        /*
+        HttpRequest request2=new HttpRequest(RequestMethod.POST,"192.168.0.102:5000/upload_file",null,new HttpCallback() {
+            @Override
+            public void onSuceess(Object object) {
+                System.out.println("UploadFile onSuccess: "+object);
+            }
+
+            @Override
+            public void onFailure(Object object) {
+                System.out.println("UploadFile onFailure: "+object);
+            }
+        });
+        requestQueue.add(request2);*/
     }
 }

@@ -5,6 +5,7 @@ import android.os.Message;
 
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
+import com.didihe1988.husky.http.param.Params;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class HttpRequest {
     private Handler handler;
     private HttpConfig config;
     private String url;
-    private Map<String,String> params;
+    private Params params;
 
     public RequestMethod getMethod() {
         return method;
@@ -76,16 +77,15 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public Map<String, String> getParams() {
+    public Params getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public void setParams(Params params) {
         this.params = params;
     }
 
-
-    public HttpRequest(RequestMethod method,String url, Map<String, String> params,HttpCallback callback,HttpConfig config) {
+    public HttpRequest(RequestMethod method,String url,Params params,HttpCallback callback,HttpConfig config) {
         this.method=method;
         this.handler = new HttpHandler();
         this.config = config;
@@ -94,7 +94,7 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(RequestMethod method,String url, Map<String, String> params,HttpCallback callback) {
+    public HttpRequest(RequestMethod method,String url,Params params,HttpCallback callback) {
         this.method=method;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
@@ -103,7 +103,7 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(String url, Map<String, String> params,HttpCallback callback) {
+    public HttpRequest(String url,Params params,HttpCallback callback) {
         this.method=RequestMethod.GET;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();

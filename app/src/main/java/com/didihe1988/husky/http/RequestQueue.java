@@ -6,6 +6,7 @@ import android.os.Message;
 
 import com.didihe1988.husky.constant.MessageType;
 import com.didihe1988.husky.constant.RequestMethod;
+import com.didihe1988.husky.http.executor.Executor;
 import com.didihe1988.husky.utils.HttpUtils;
 
 import java.io.BufferedReader;
@@ -87,6 +88,11 @@ public class RequestQueue {
          */
         private synchronized Object execute(HttpRequest request)
         {
+
+            Executor executor =Executor.create(request.getMethod());
+            return executor.execute(request);
+
+            /*
            switch (request.getMethod())
            {
                case POST:
@@ -95,47 +101,7 @@ public class RequestQueue {
                default:
                    return executeGet(request);
 
-           }
-        }
-
-        private Object executeGet(HttpRequest request)
-        {
-            try {
-                URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
-                System.out.println(url.toString());
-                HttpConfig config=request.getConfig();
-                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
-                connection.setRequestMethod(GET.name());
-                connection.setUseCaches(config.isUseCaches());
-                connection.setReadTimeout(config.getReadTimeOut());
-                connection.setConnectTimeout(config.getConnectTimeOut());
-                if(request.getParams()!=null)
-                {
-                    for(Map.Entry<String,String> param:request.getParams().entrySet())
-                    {
-                        connection.setRequestProperty(param.getKey(),param.getValue());
-                    }
-                }
-
-                BufferedReader in=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuffer response=new StringBuffer();
-                while( (inputLine=in.readLine())!=null)
-                {
-                    response.append(inputLine);
-                }
-                in.close();
-                connection.disconnect();
-                return  response.toString();
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-                return e;
-            }
-            catch (IOException e) {
-                System.out.println("IOException");
-                e.printStackTrace();
-                return e;
-            }
+           }*/
         }
 
         private Object executePost(HttpRequest request)
@@ -222,10 +188,6 @@ public class RequestQueue {
             }
             return builder.toString();
         }
-
-        //{ "Name": "Foo", "Id": 1234, "Rank": 7 }
-
-
 
 
         private void sendMessage(Handler handler,Object obj)
