@@ -1,11 +1,10 @@
 package com.didihe1988.husky.http.executor;
 
-import com.didihe1988.husky.constant.ExecuteType;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.exception.MethodException;
 import com.didihe1988.husky.http.HttpRequest;
-import com.didihe1988.husky.http.param.FileParams;
-import com.didihe1988.husky.http.param.Params;
+import com.didihe1988.husky.http.param.FileDownloadParam;
+import com.didihe1988.husky.http.param.FileUploadParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,31 +15,40 @@ import java.io.InputStreamReader;
  * Created by lml on 2014/9/26.
  */
 public abstract class Executor {
-    private ExecuteType type;
+    //private ExecuteType type;
 
-    public abstract Object execute(HttpRequest request);
+    protected HttpRequest request;
 
-    protected Executor(ExecuteType type)
+    public abstract Object execute();
+
+    /*protected Executor(ExecuteType type)
     {
         this.type=type;
+    }*/
+
+
+    protected Executor(HttpRequest request)
+    {
+        this.request=request;
     }
 
-    public static Executor create(RequestMethod method,Params params) throws MethodException {
-        if(method == RequestMethod.GET)
+    public static Executor create(HttpRequest request) throws MethodException {
+        if(request.getMethod() == RequestMethod.GET)
         {
-            if(params instanceof FileParams)
+
+            if(request.getParams() instanceof FileDownloadParam)
             {
-                throw new MethodException("Upload file should use POST method");
+                return new DownloadExecutor(request);
             }
-            return new GetExecutor();
+            return new GetExecutor(request);
         }
         else
         {
-            if(params instanceof FileParams)
+            if(request.getParams() instanceof FileUploadParams)
             {
-                return new UploadFileExecutor();
+                return new UploadFileExecutor(request);
             }
-            return new PostExecutor();
+            return new PostExecutor(request);
         }
     }
 

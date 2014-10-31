@@ -1,18 +1,13 @@
 package com.didihe1988.husky.http.executor;
 
-import com.didihe1988.husky.constant.ExecuteType;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
 import com.didihe1988.husky.utils.HttpUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Map;
 
 import static com.didihe1988.husky.constant.RequestMethod.GET;
 
@@ -20,12 +15,19 @@ import static com.didihe1988.husky.constant.RequestMethod.GET;
  * Created by lml on 2014/9/26.
  */
 public class GetExecutor extends Executor{
-    protected GetExecutor() {
+    /*protected GetExecutor() {
         super(ExecuteType.GET_NORMAL);
+    }*/
+    /*
+    构造函数对父类Executor可见  在Executor.create()中调用
+     */
+    protected GetExecutor(HttpRequest request)
+    {
+        super(request);
     }
 
     @Override
-    public Object execute(HttpRequest request) {
+    public Object execute() {
         HttpURLConnection connection=null;
         try {
             URL url=new URL(HttpUtils.addProtocol(request.getUrl()));

@@ -74,7 +74,7 @@ public class HttpRequest {
     }
 
     public void setParams(Params params) {
-        this.params = params;
+        this.params=params;
     }
 
     public HttpRequest(RequestMethod method,String url,Params params,BaseCallback callback,HttpConfig config) {
@@ -82,7 +82,7 @@ public class HttpRequest {
         this.handler = new HttpHandler();
         this.config = config;
         this.url = url;
-        this.params = params;
+        this.params=params;
         this.callback = callback;
     }
 
@@ -91,7 +91,7 @@ public class HttpRequest {
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
         this.url = url;
-        this.params = params;
+        this.params=params;
         this.callback = callback;
     }
 
@@ -100,7 +100,7 @@ public class HttpRequest {
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
         this.url = url;
-        this.params = params;
+        this.params=params;
         this.callback = callback;
     }
 

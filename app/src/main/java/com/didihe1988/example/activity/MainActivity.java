@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.didihe1988.husky.constant.RequestMethod;
+import com.didihe1988.husky.http.FileUploadCallback;
 import com.didihe1988.husky.http.HttpRequest;
 import com.didihe1988.husky.http.RequestQueue;
-import com.didihe1988.husky.http.FileUploadCallback;
-import com.didihe1988.husky.http.param.FileParams;
+import com.didihe1988.husky.http.param.FileDownloadParam;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -24,7 +22,7 @@ public class MainActivity extends Activity{
 
         String url="192.168.0.102:5000/get_normal";
 
-        Map<String,String> params=new HashMap<String, String>();
+        //Map<String,String> params=new HashMap<String, String>();
         RequestQueue requestQueue=new RequestQueue();
         /*
         HttpRequest request=new HttpRequest(url,null,new HttpCallback() {
@@ -55,7 +53,7 @@ public class MainActivity extends Activity{
             }
         });
         requestQueue.add(request1);*/
-        File file=new File("/mnt/sdcard/test.jpg");
+       /* File file=new File("/mnt/sdcard/test.jpg");
         File file1=new File("/mnt/sdcard/beauty.jpg");
         FileParams fileParams=new FileParams();
         fileParams.putParamEntry("language","java");
@@ -79,6 +77,28 @@ public class MainActivity extends Activity{
                 System.out.println(fileCount+" "+curFile+" "+count+" "+cur);
             }
         });
+        requestQueue.add(request2);*/
+        File file=new File("/storage/sdcard0/lml/test.jpg");
+        FileDownloadParam param=new FileDownloadParam(file,10);
+        HttpRequest request2=new HttpRequest(RequestMethod.GET,"http://n0.itc.cn/img7/adapt/wb/smccloud/fetch/2014/10/27/92218658612621356_302_1000.jpg",param,new FileUploadCallback(){
+            @Override
+            public void onSuceess(Object object) {
+                System.out.println("DownloadFile onSuccess: "+object);
+            }
+
+            @Override
+            public void onFailure(Object object) {
+                System.out.println("DownloadFile onFailure: "+object);
+            }
+
+
+            @Override
+            public void onProgressUpdate(int fileCount, int curFile, long count, long cur) {
+                System.out.println(fileCount+" "+curFile+" "+count+" "+cur);
+            }
+        });
         requestQueue.add(request2);
+
     }
+
 }

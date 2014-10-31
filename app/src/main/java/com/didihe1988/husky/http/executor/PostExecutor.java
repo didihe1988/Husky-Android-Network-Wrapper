@@ -1,15 +1,12 @@
 package com.didihe1988.husky.http.executor;
 
-import com.didihe1988.husky.constant.ExecuteType;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
-import com.didihe1988.husky.http.param.Params;
+import com.didihe1988.husky.http.param.PostParams;
 import com.didihe1988.husky.utils.HttpUtils;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -25,12 +22,19 @@ import static com.didihe1988.husky.constant.RequestMethod.POST;
  * Created by lml on 2014/9/26.
  */
 public class PostExecutor extends Executor{
+   /*
    protected PostExecutor() {
+
         super(ExecuteType.POST_NORMAL);
+    }
+    */
+    protected PostExecutor(HttpRequest request)
+    {
+        super(request);
     }
 
     @Override
-    public Object execute(HttpRequest request){
+    public Object execute(){
         HttpURLConnection connection=null;
         try {
             URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
@@ -51,7 +55,7 @@ public class PostExecutor extends Executor{
             {
                 OutputStream out=connection.getOutputStream();
                 BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(out,"UTF-8"));
-                writer.write(getParamString(request.getParams()));
+                writer.write(getParamString((PostParams)request.getParams()));
                 writer.flush();
                 writer.close();
             }
@@ -77,10 +81,10 @@ public class PostExecutor extends Executor{
 
     }
 
-    private String getParamString(Params params) throws UnsupportedEncodingException {
+    private String getParamString(PostParams postParams) throws UnsupportedEncodingException {
         StringBuilder builder=new StringBuilder();
         boolean isFirst=true;
-        for(Map.Entry<String,String> entry:params.getParamMap().entrySet())
+        for(Map.Entry<String,String> entry: postParams.getParamMap().entrySet())
         {
             if(isFirst)
             {

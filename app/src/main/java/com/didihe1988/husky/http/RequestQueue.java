@@ -5,30 +5,12 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.didihe1988.husky.constant.MessageType;
-import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.exception.MethodException;
 import com.didihe1988.husky.http.executor.Executor;
-import com.didihe1988.husky.utils.HttpUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.AbstractQueue;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-
-import static com.didihe1988.husky.constant.RequestMethod.*;
-import static com.didihe1988.husky.constant.RequestMethod.GET;
 
 /**
  * Created by lml on 2014/9/23.
@@ -92,11 +74,11 @@ public class RequestQueue {
 
             Executor executor = null;
             try {
-                executor = Executor.create(request.getMethod(), request.getParams());
+                executor = Executor.create(request);
             } catch (MethodException e) {
                 return e;
             }
-            return executor.execute(request);
+            return executor.execute();
 
         }
 

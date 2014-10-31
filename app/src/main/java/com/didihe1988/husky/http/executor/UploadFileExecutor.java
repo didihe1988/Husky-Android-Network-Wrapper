@@ -1,36 +1,26 @@
 package com.didihe1988.husky.http.executor;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.didihe1988.husky.constant.ExecuteType;
 import com.didihe1988.husky.constant.MessageType;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
-import com.didihe1988.husky.http.param.FileParams;
+import com.didihe1988.husky.http.param.FileUploadParams;
 import com.didihe1988.husky.utils.HttpUtils;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
-import static com.didihe1988.husky.constant.RequestMethod.GET;
 
 /**
  * Created by lml on 2014/9/26.
@@ -40,15 +30,19 @@ public class UploadFileExecutor extends Executor{
     private static final String twoHyphens="--";
     private static final String boundry="AaB03x";
 
-    protected UploadFileExecutor() {
+    /*protected UploadFileExecutor() {
         super(ExecuteType.POST_FILE);
+    }*/
+    protected UploadFileExecutor(HttpRequest request)
+    {
+        super(request);
     }
 
     /*
      *   rfc1867
      */
     @Override
-    public Object execute(HttpRequest request) {
+    public Object execute() {
         HttpURLConnection connection=null;
 
         try {
@@ -67,8 +61,8 @@ public class UploadFileExecutor extends Executor{
             connection.setRequestProperty("Cache-Control", "no-cache");
             connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + this.boundry);
             DataOutputStream out=new DataOutputStream(connection.getOutputStream());
-            addFormField(request.getParams().getParamMap(),out);
-            addFilePart(((FileParams)request.getParams()).getFileMap(),out,request.getHandler());
+            addFormField(((FileUploadParams)request.getParams()).getParamMap(),out);
+            addFilePart(((FileUploadParams)request.getParams()).getFileMap(),out,request.getHandler());
 
             return getResponse(connection.getInputStream());
         } catch (ProtocolException e) {

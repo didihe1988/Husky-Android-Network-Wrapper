@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by lml on 2014/9/27.
  */
-public class FileParams extends Params{
+public class FileUploadParams extends PostParams {
     private Map<String,File> fileMap=new HashMap<String, File>();
 
     public Map<String, File> getFileMap() {
@@ -18,18 +18,18 @@ public class FileParams extends Params{
         this.fileMap = fileMap;
     }
 
-    public FileParams()
+    public FileUploadParams()
     {
         super();
     }
 
-    public FileParams(Map<String,File> fileMap)
+    public FileUploadParams(Map<String, File> fileMap)
     {
         super();
         this.fileMap=fileMap;
     }
 
-    public FileParams(Map<String,String> paramMap,Map<String,File> fileMap)
+    public FileUploadParams(Map<String, String> paramMap, Map<String, File> fileMap)
     {
         super(paramMap);
         this.fileMap=fileMap;
