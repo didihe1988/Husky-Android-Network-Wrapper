@@ -13,8 +13,8 @@ def get():
 
 @app.route('/post_normal', methods=['POST'])
 def post():
-    print(request.form);
-    return str(request.form)
+    print(request.form)
+    return "eco form: "+str(request.form)
 
 
 @app.route('/upload_file', methods=['POST'])

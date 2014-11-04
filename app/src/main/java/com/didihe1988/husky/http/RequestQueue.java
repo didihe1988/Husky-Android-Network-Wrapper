@@ -1,15 +1,9 @@
 package com.didihe1988.husky.http;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-
-import com.didihe1988.husky.constant.MessageType;
 import com.didihe1988.husky.exception.MethodException;
 import com.didihe1988.husky.http.executor.Executor;
 
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.util.LinkedList;
 
 /**
@@ -56,12 +50,12 @@ public class RequestQueue {
                         queue.wait();
                     } catch (InterruptedException e) {
                 e.printStackTrace();
+                }
             }
-        }
 
-                HttpRequest request=queue.pop();
-                Object obj=execute(request);
-                sendMessage(request.getHandler(), obj);
+            HttpRequest request=queue.pop();
+            execute(request);
+                //sendMessage(request.getHandler(), obj);
             }
 
         }
@@ -69,19 +63,27 @@ public class RequestQueue {
         /*
             synchronized   only one request at a time
          */
-        private synchronized Object execute(HttpRequest request)
+        private synchronized void execute(HttpRequest request)
         {
 
             Executor executor = null;
             try {
                 executor = Executor.create(request);
+                executor.execute();
             } catch (MethodException e) {
-                return e;
+                e.printStackTrace();
             }
-            return executor.execute();
+            catch (IOException e)
+            {
+                /*
+                Exception of connect.getResponseCode()
+                */
+                e.printStackTrace();
+            }
+
 
         }
-
+        /*
         private void sendMessage(Handler handler,Object obj)
         {
             Message msg=Message.obtain();
@@ -103,7 +105,7 @@ public class RequestQueue {
             }
             msg.setData(bundle);
             handler.sendMessage(msg);
-        }
+        }*/
     }
 
 }

@@ -19,7 +19,15 @@ public abstract class Executor {
 
     protected HttpRequest request;
 
-    public abstract Object execute();
+    public HttpRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpRequest request) {
+        this.request = request;
+    }
+
+    public abstract void execute() throws IOException;
 
     /*protected Executor(ExecuteType type)
     {
@@ -46,7 +54,7 @@ public abstract class Executor {
         {
             if(request.getParams() instanceof FileUploadParams)
             {
-                return new UploadFileExecutor(request);
+                return new UploadExecutor(request);
             }
             return new PostExecutor(request);
         }

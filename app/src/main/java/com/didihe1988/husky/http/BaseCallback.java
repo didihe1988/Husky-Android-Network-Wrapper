@@ -1,13 +1,9 @@
 package com.didihe1988.husky.http;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 
 import com.didihe1988.husky.constant.MessageType;
-
-import static android.os.Handler.Callback;
 
 /**
  * Created by lml on 2014/9/23.
@@ -35,17 +31,16 @@ public abstract class BaseCallback {
         switch (msg.what)
         {
             case MessageType.REQUEST_SUCCESS:
-                onSuceess(bundle.get("response"));
+                onSuccess(bundle.getString("response"));
                 break;
             case MessageType.REQUEST_FAILURE:
-            default:
-                onFailure(bundle.get("exception"));
+                onFailure((Exception)msg.obj,bundle.getInt("errCode"));
         }
    }
 
-    public abstract void onSuceess(Object object);
+    public abstract void onSuccess(Object response);
 
-    public abstract  void onFailure(Object object);
+    public abstract  void onFailure(Exception exception,int errCode);
 
 
 

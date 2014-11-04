@@ -1,12 +1,14 @@
-package com.didihe1988.husky.http.download;
+package com.didihe1988.husky.http.executor.download;
 
-import java.io.File;
+import com.didihe1988.husky.http.executor.DownloadExecutor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 
 import static com.didihe1988.husky.constant.RequestMethod.GET;
 
@@ -14,27 +16,24 @@ import static com.didihe1988.husky.constant.RequestMethod.GET;
  * Created by lml on 2014/10/31.
  */
 public class DownloadThread extends Thread{
-    private String url;
+    private CountDownLatch doneSignal;
 
-    private File saveFile;
-
-    private int block;
+    private DownloadExecutor executor;
 
     private int index;
 
-    public DownloadThread(String url, File saveFile, int block, int index) {
-        this.url = url;
-        this.saveFile = saveFile;
-        this.block = block;
+    public DownloadThread(CountDownLatch doneSignal,DownloadExecutor executor,int index) {
+        this.doneSignal=doneSignal;
+        this.executor=executor;
         this.index = index;
     }
 
     @Override
-    public void run() {
+    public void run(){
         super.run();
         HttpURLConnection connection=null;
         try {
-            URL url=new URL(this.url);
+            URL url=new URL(executor.getRequest().getUrl());
             connection=(HttpURLConnection)url.openConnection();
             connection.setRequestMethod(GET.name());
             connection.setUseCaches(false);
@@ -44,10 +43,10 @@ public class DownloadThread extends Thread{
                     "Accept",
                     "image/gif, image/jpeg, image/pjpeg, image/pjpeg");
             //("Range", "bytes=" + start + "-" + end + "")
-            int startPos=block*index;
-            int endPos=block*(index+1)-1;
+            int startPos=executor.getBlock()*index;
+            int endPos=executor.getBlock()*(index+1)-1;
             connection.setRequestProperty("Range","bytes="+startPos+"-"+endPos);
-            RandomAccessFile file=new RandomAccessFile(this.saveFile,"rwd");
+            RandomAccessFile file=new RandomAccessFile(executor.getSaveFile(),"rwd");
             file.seek(startPos);
             byte[] buffer=new byte[1024];
             int bytes=-1;
@@ -55,18 +54,21 @@ public class DownloadThread extends Thread{
             while((bytes=input.read(buffer))!=-1)
             {
                 file.write(buffer,0,bytes);
+                executor.addCurLength(bytes);
             }
         } catch (ProtocolException e) {
-            e.printStackTrace();
+            executor.handleThreadException(e,connection);
         }
         catch (IOException e) {
-            e.printStackTrace();
+
+            executor.handleThreadException(e,connection);
         }
         finally {
             if(connection!=null)
             {
                 connection.disconnect();
             }
+            doneSignal.countDown();
         }
     }
 }

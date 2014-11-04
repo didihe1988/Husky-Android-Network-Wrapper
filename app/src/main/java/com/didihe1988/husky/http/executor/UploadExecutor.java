@@ -1,13 +1,11 @@
 package com.didihe1988.husky.http.executor;
 
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 
-import com.didihe1988.husky.constant.MessageType;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
+import com.didihe1988.husky.http.component.UploadMessageSender;
 import com.didihe1988.husky.http.param.FileUploadParams;
 import com.didihe1988.husky.utils.HttpUtils;
 
@@ -25,24 +23,27 @@ import java.util.Map;
 /**
  * Created by lml on 2014/9/26.
  */
-public class UploadFileExecutor extends Executor{
+public class UploadExecutor extends Executor{
     private static final String crlf="\r\n";
     private static final String twoHyphens="--";
     private static final String boundry="AaB03x";
 
+    private UploadMessageSender sender;
+
     /*protected UploadFileExecutor() {
         super(ExecuteType.POST_FILE);
     }*/
-    protected UploadFileExecutor(HttpRequest request)
+    protected UploadExecutor(HttpRequest request)
     {
         super(request);
+        this.sender=new UploadMessageSender();
     }
 
     /*
      *   rfc1867
      */
     @Override
-    public Object execute() {
+    public void execute() throws IOException {
         HttpURLConnection connection=null;
 
         try {
@@ -64,14 +65,15 @@ public class UploadFileExecutor extends Executor{
             addFormField(((FileUploadParams)request.getParams()).getParamMap(),out);
             addFilePart(((FileUploadParams)request.getParams()).getFileMap(),out,request.getHandler());
 
-            return getResponse(connection.getInputStream());
+            String response=getResponse(connection.getInputStream());
+            sender.sendMessage(request.getHandler(),response);
         } catch (ProtocolException e) {
-            e.printStackTrace();
-            return e;
+            String response=getResponse(connection.getInputStream());
+            sender.sendMessage(request.getHandler(), response);
         }
         catch (IOException e) {
-            e.printStackTrace();
-            return e;
+            String response=getResponse(connection.getInputStream());
+            sender.sendMessage(request.getHandler(), response);
         }
         finally {
             if(connection!=null)
@@ -93,6 +95,7 @@ public class UploadFileExecutor extends Executor{
 
         //DataOutputStream out = new DataOutputStream(outputStream);
         int index=0;
+        int fileCount=fileMap.size();
         for(Map.Entry entry:fileMap.entrySet())
         {
             File file= (File) entry.getValue();
@@ -110,7 +113,7 @@ public class UploadFileExecutor extends Executor{
             {
                 out.write(buffer,0,bytes);
                 cur+=bytes;
-                sendProgressMessage(handler,fileMap.size(),index,cur,count);
+                sender.sendProgressMessage(handler,fileCount,index,count,cur);
             }
 
             out.writeBytes(this.crlf);
@@ -119,19 +122,6 @@ public class UploadFileExecutor extends Executor{
         out.writeBytes(this.twoHyphens+this.boundry+this.twoHyphens+this.crlf);
         out.flush();
         out.close();
-    }
-
-    private void sendProgressMessage(Handler handler,int fileCount,int curFile,long count,long cur)
-    {
-        Message message=Message.obtain();
-        message.what= MessageType.REQUEST_PROGRESS;
-        Bundle bundle=new Bundle();
-        bundle.putInt("fileCount",fileCount);
-        bundle.putInt("curFile",curFile);
-        bundle.putLong("count",count);
-        bundle.putLong("cur",cur);
-        message.setData(bundle);
-        handler.sendMessage(message);
     }
 
     private void addFormField(Map<String,String> paramsMap,DataOutputStream out) throws IOException {

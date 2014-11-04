@@ -27,7 +27,7 @@ public class PostParams extends Params{
         this.paramMap=paramMap;
     }
 
-    public void putParamEntry(String name,String value)
+    public void put(String name,String value)
     {
         paramMap.put(name,value);
     }

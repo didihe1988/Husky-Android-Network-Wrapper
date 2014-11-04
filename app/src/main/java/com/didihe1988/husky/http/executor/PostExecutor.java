@@ -2,6 +2,7 @@ package com.didihe1988.husky.http.executor;
 
 import com.didihe1988.husky.http.HttpConfig;
 import com.didihe1988.husky.http.HttpRequest;
+import com.didihe1988.husky.http.component.MessageSender;
 import com.didihe1988.husky.http.param.PostParams;
 import com.didihe1988.husky.utils.HttpUtils;
 
@@ -22,19 +23,17 @@ import static com.didihe1988.husky.constant.RequestMethod.POST;
  * Created by lml on 2014/9/26.
  */
 public class PostExecutor extends Executor{
-   /*
-   protected PostExecutor() {
 
-        super(ExecuteType.POST_NORMAL);
-    }
-    */
+   private MessageSender sender;
+
     protected PostExecutor(HttpRequest request)
     {
         super(request);
+        this.sender=new MessageSender();
     }
 
     @Override
-    public Object execute(){
+    public void execute() throws IOException {
         HttpURLConnection connection=null;
         try {
             URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
@@ -60,17 +59,18 @@ public class PostExecutor extends Executor{
                 writer.close();
             }
 
-            return getResponse(connection.getInputStream());
+            String response=getResponse(connection.getInputStream());
+            sender.sendMessage(request.getHandler(),response);
         } catch (ProtocolException e) {
-            e.printStackTrace();
-            return e;
+            int errCode=connection!=null?connection.getResponseCode():-1;
+            sender.sendFailureMessage(request.getHandler(),e,errCode);
         } catch (UnsupportedEncodingException e)
         {
-            e.printStackTrace();
-            return e;
+            int errCode=connection!=null?connection.getResponseCode():-1;
+            sender.sendFailureMessage(request.getHandler(),e,errCode);
         } catch (IOException e) {
-            e.printStackTrace();
-            return e;
+            int errCode=connection!=null?connection.getResponseCode():-1;
+            sender.sendFailureMessage(request.getHandler(),e,errCode);
         }
         finally {
             if(connection!=null)
