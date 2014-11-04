@@ -15,7 +15,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 
-import static com.didihe1988.husky.constant.RequestMethod.GET;
+import static com.didihe1988.husky.constant.RequestMethod.HEAD;
 
 /**
  * Created by lml on 2014/10/31.
@@ -72,7 +72,7 @@ public class DownloadExecutor extends Executor {
         try {
             URL url=new URL(request.getUrl());
             connection=(HttpURLConnection)url.openConnection();
-            connection.setRequestMethod(GET.name());
+            connection.setRequestMethod(HEAD.name());
             connection.setUseCaches(false);
             connection.setReadTimeout(12000);
             connection.setConnectTimeout(12000);

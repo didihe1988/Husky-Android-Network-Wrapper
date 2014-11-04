@@ -8,8 +8,10 @@ import com.didihe1988.example.constant.Web;
 import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.BaseCallback;
 import com.didihe1988.husky.http.FileDownloadCallBack;
+import com.didihe1988.husky.http.HeadCallback;
 import com.didihe1988.husky.http.HttpRequest;
 import com.didihe1988.husky.http.RequestQueue;
+import com.didihe1988.husky.http.executor.head.Content;
 import com.didihe1988.husky.http.param.FileDownloadParam;
 import com.didihe1988.husky.http.param.PostParams;
 
@@ -112,9 +114,10 @@ public class MainActivity extends Activity{
 
         testGET(requestQueue);
 
-        testPOST(requestQueue);*/
+        testPOST(requestQueue);
 
-        testFileDownload(requestQueue);
+        testFileDownload(requestQueue);*/
+        testHead(requestQueue);
     }
 
     private void testException(RequestQueue requestQueue){
@@ -200,5 +203,22 @@ public class MainActivity extends Activity{
         requestQueue.add(request);
     }
 
+    private void testHead(RequestQueue requestQueue)
+    {
+        String url="http://c2.hoopchina.com.cn/uploads/star/event/images/141103/bmiddle-1a2e7216ebf392d8265b658e3fbedd7f8df624e9.jpg";
+        //final File file=new File("/storage/sdcard0/tmp_fot_test/test.jpg");
+        HttpRequest request=new HttpRequest(RequestMethod.HEAD,url,null,new HeadCallback() {
+            @Override
+            public void onSuccess(Object response) {
+                Log.i(TAG,((Content)response).toString());
+            }
 
+            @Override
+            public void onFailure(Exception exception, int errCode) {
+                Log.i(TAG,"exception: "+exception.toString());
+                Log.i(TAG,"errCode: "+errCode);
+            }
+        });
+        requestQueue.add(request);
+    }
 }

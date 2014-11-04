@@ -50,8 +50,15 @@ public abstract class Executor {
             }
             return new GetExecutor(request);
         }
+        else if(request.getMethod() == RequestMethod.HEAD)
+        {
+            return new HeadExecutor(request);
+        }
         else
         {
+            /*
+            设定Method为POST
+             */
             if(request.getParams() instanceof FileUploadParams)
             {
                 return new UploadExecutor(request);
