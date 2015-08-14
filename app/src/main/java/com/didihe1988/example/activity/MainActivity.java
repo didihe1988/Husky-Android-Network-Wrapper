@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.didihe1988.example.constant.Web;
-import com.didihe1988.husky.constant.RequestMethod;
 import com.didihe1988.husky.http.BaseCallback;
 import com.didihe1988.husky.http.FileDownloadCallBack;
 import com.didihe1988.husky.http.HeadCallback;
@@ -109,20 +108,25 @@ public class MainActivity extends Activity{
             }
         });
         requestQueue.add(request2);*/
-        /*
-        testException(requestQueue);
 
-        testGET(requestQueue);
+        //stestException(requestQueue);
 
-        testPOST(requestQueue);
+        //testGET(requestQueue);
 
-        testFileDownload(requestQueue);*/
-        testHead(requestQueue);
+        //testPOST(requestQueue);
+
+        //testFileDownload(requestQueue);
+
+        //testHead(requestQueue);
+        new Thread(new HttpConnection("http://192.168.0.114:5000/get_normal")).start();
+        new Thread(new HttpConnection("http://192.168.0.114:5000/get_normal")).start();
+        new Thread(new HttpConnection("http://192.168.0.114:5000/get_normal")).start();
     }
 
-    private void testException(RequestQueue requestQueue){
+    private void testException(final RequestQueue requestQueue){
+        System.out.println("in testException");
         String url= Web.BaseUrl+"/fake";
-        HttpRequest request=new HttpRequest(url,null,new BaseCallback() {
+        HttpRequest request=new HttpRequest(url,new BaseCallback() {
             @Override
             public void onSuccess(Object response) {
                 Log.i(TAG,"response: "+response);
@@ -137,9 +141,10 @@ public class MainActivity extends Activity{
         requestQueue.add(request);
     }
 
-    private void testGET(RequestQueue requestQueue){
+    private void testGET(final RequestQueue requestQueue){
+        System.out.println("in testGET");
         String url= Web.BaseUrl+"/get_normal";
-        HttpRequest request=new HttpRequest(url,null,new BaseCallback() {
+        HttpRequest request=new HttpRequest(url,new BaseCallback() {
             @Override
             public void onSuccess(Object response) {
                 Log.i(TAG,"response: "+response);
@@ -155,12 +160,13 @@ public class MainActivity extends Activity{
     }
 
     private void testPOST(RequestQueue requestQueue){
+        System.out.println("in testPOST");
         String url= Web.BaseUrl+"/post_normal";
         PostParams params=new PostParams();
         params.put("age", "2");
         params.put("name","Jack");
         params.put("weight", "98");
-        HttpRequest request=new HttpRequest(RequestMethod.POST,url,params,new BaseCallback() {
+        HttpRequest request=new HttpRequest(url,params,new BaseCallback() {
             @Override
             public void onSuccess(Object response) {
                 Log.i(TAG,"response: "+response);
@@ -182,7 +188,7 @@ public class MainActivity extends Activity{
         final File file=new File("/mnt/sdcard/test.jpg");
         int threadNum=10;
         FileDownloadParam param=new FileDownloadParam(file,threadNum);
-        HttpRequest request=new HttpRequest(RequestMethod.GET,url,param,new FileDownloadCallBack()
+        HttpRequest request=new HttpRequest(url,param,new FileDownloadCallBack()
         {
             @Override
             public void onProgress(int fileLength, int curLength) {
@@ -206,8 +212,8 @@ public class MainActivity extends Activity{
     private void testHead(RequestQueue requestQueue)
     {
         String url="http://c2.hoopchina.com.cn/uploads/star/event/images/141103/bmiddle-1a2e7216ebf392d8265b658e3fbedd7f8df624e9.jpg";
-        //final File file=new File("/storage/sdcard0/tmp_fot_test/test.jpg");
-        HttpRequest request=new HttpRequest(RequestMethod.HEAD,url,null,new HeadCallback() {
+
+        HttpRequest request=new HttpRequest(url,new HeadCallback() {
             @Override
             public void onSuccess(Object response) {
                 Log.i(TAG,((Content)response).toString());

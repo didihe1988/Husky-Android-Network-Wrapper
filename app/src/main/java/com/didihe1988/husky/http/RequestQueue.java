@@ -52,7 +52,7 @@ public class RequestQueue {
                 e.printStackTrace();
                 }
             }
-
+            System.out.println("queue pop");
             HttpRequest request=queue.pop();
             execute(request);
                 //sendMessage(request.getHandler(), obj);
@@ -69,6 +69,7 @@ public class RequestQueue {
             Executor executor = null;
             try {
                 executor = Executor.create(request);
+                System.out.println("executor "+executor.toString());
                 executor.execute();
             } catch (MethodException e) {
                 e.printStackTrace();

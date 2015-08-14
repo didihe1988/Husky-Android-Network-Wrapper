@@ -4,7 +4,10 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.didihe1988.husky.constant.RequestMethod;
+import com.didihe1988.husky.http.param.FileDownloadParam;
+import com.didihe1988.husky.http.param.FileUploadParams;
 import com.didihe1988.husky.http.param.Params;
+import com.didihe1988.husky.http.param.PostParams;
 
 /**
  * Created by lml on 2014/9/23.
@@ -77,6 +80,9 @@ public class HttpRequest {
         this.params=params;
     }
 
+    /*
+    Full Field Constructor
+     */
     public HttpRequest(RequestMethod method,String url,Params params,BaseCallback callback,HttpConfig config) {
         this.method=method;
         this.handler = new HttpHandler();
@@ -86,16 +92,36 @@ public class HttpRequest {
         this.callback = callback;
     }
 
-    public HttpRequest(RequestMethod method,String url,Params params,BaseCallback callback) {
-        this.method=method;
+    /*
+    sub situation
+     */
+
+    /**
+    GET
+     */
+    public HttpRequest(String url,BaseCallback callback) {
+        this.method=RequestMethod.GET;
+        this.handler = new HttpHandler();
+        this.config = new HttpConfig();
+        this.url = url;
+        this.params=null;
+        this.callback = callback;
+    }
+    /**
+    POST
+     */
+    public HttpRequest(String url,PostParams params,BaseCallback callback) {
+        this.method=RequestMethod.POST;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
         this.url = url;
         this.params=params;
         this.callback = callback;
     }
-
-    public HttpRequest(String url,Params params,BaseCallback callback) {
+    /**
+    Download File
+     */
+    public HttpRequest(String url,FileDownloadParam params,FileDownloadCallBack callback) {
         this.method=RequestMethod.GET;
         this.handler = new HttpHandler();
         this.config = new HttpConfig();
@@ -103,7 +129,28 @@ public class HttpRequest {
         this.params=params;
         this.callback = callback;
     }
-
+    /**
+    Upload File
+    */
+    public HttpRequest(String url,FileUploadParams params,FileUploadCallback callback) {
+        this.method=RequestMethod.POST;
+        this.handler = new HttpHandler();
+        this.config = new HttpConfig();
+        this.url = url;
+        this.params=params;
+        this.callback = callback;
+    }
+    /**
+     * HEAD
+     */
+    public HttpRequest(String url,HeadCallback callback) {
+        this.method=RequestMethod.HEAD;
+        this.handler = new HttpHandler();
+        this.config = new HttpConfig();
+        this.url = url;
+        this.params=null;
+        this.callback = callback;
+    }
 
     private class HttpHandler extends  Handler
     {

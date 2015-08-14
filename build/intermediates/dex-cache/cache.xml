@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="C:\Users\lml\AndroidStudioProjects\Husky\app\build\intermediates\pre-dexed\debug\gson-2.2.4-86f992b3a3a3ff5a7424855e932cfbe1b6d01ae5.jar"
+        jar="C:\Users\lml\AndroidStudioProjects\Husky\app\libs\gson-2.2.4.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="973e832af433b44c3ed11c426f2f390b29f3f3f8"/>
+
+</pre-dex-items>
