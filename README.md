@@ -11,7 +11,7 @@ Provide basic http-methods(get,post,header),multi-thread uploading and downloadi
 &nbsp;&nbsp;&nbsp;The RequestQueue is in synchronized block when it invokes push() and pop() method to ensure thread safety.
 
     RequestQueue requestQueue=new RequestQueue();
-1.GET method: override onSuccess() and onFailure() methods in Interface  BaseCallback.<br>
+2.GET method: override onSuccess() and onFailure() methods in Interface  BaseCallback.<br>
 &nbsp;&nbsp;&nbsp;Remember to add request to the requestQueue.
 
      String url= Web.BaseUrl+"/get_normal";
@@ -30,7 +30,7 @@ Provide basic http-methods(get,post,header),multi-thread uploading and downloadi
         requestQueue.add(request);
         
 ![](https://github.com/didihe1988/Husky-Android-Network-Wrapper/raw/master/screenshot/test_get.png)
-2.POST method: override onSuccess() and onFailure() methods in Interface  BaseCallback.
+3.POST method: override onSuccess() and onFailure() methods in Interface  BaseCallback.
 
      String url= Web.BaseUrl+"/post_normal";
         PostParams params=new PostParams();
@@ -53,7 +53,7 @@ Provide basic http-methods(get,post,header),multi-thread uploading and downloadi
 
 
 ![](https://github.com/didihe1988/Husky-Android-Network-Wrapper/raw/master/screenshot/test_post.png)
-3.HEAD method: override onSuccess() and onFailure() methods in Interface  HeadCallback.
+4.HEAD method: override onSuccess() and onFailure() methods in Interface  HeadCallback.
 
      HttpRequest request=new HttpRequest(url,new HeadCallback() {
             @Override
@@ -71,7 +71,7 @@ Provide basic http-methods(get,post,header),multi-thread uploading and downloadi
 
 ![](https://github.com/didihe1988/Husky-Android-Network-Wrapper/raw/master/screenshot/test_head.png)
 
-4.File download: override onProgress(),onSuccess() and onFailure() methods in Interface FileDownloadCallBack.<br>
+5.File download: override onProgress(),onSuccess() and onFailure() methods in Interface FileDownloadCallBack.<br>
 &nbsp;&nbsp;&nbsp;**The onProgress() method is for acquring current doanload length in the process of downloading.This method can be used to draw a progress bar.**
     
     String url="http://www.baidu.com/img/bd_logo1.png";
