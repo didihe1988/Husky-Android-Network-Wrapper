@@ -13,28 +13,28 @@ def get():
 
 @app.route('/post_normal', methods=['POST'])
 def post():
-    print(request.form)
+    print('receive: '+str(request.form))
     return "eco form: "+str(request.form)
 
 
 @app.route('/upload_file', methods=['POST'])
 def post_file():
     print(request.form)
-    image = request.files['image']
+    image = request.files['test']
     filename = image.filename
+    receive = 'receive: '+filename+' '
     print(filename)
     path = 'tmp/' + filename
-    print(path)
     image.save(path)
 
-    beauty = request.files['beauty']
-    filename = beauty.filename
+    baidu = request.files['baidu']
+    filename = baidu.filename
+    receive += filename
     print(filename)
     path = 'tmp/' + filename
-    print(path)
-    beauty.save(path)
+    baidu.save(path)
 
-    return 'success'
+    return receive
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

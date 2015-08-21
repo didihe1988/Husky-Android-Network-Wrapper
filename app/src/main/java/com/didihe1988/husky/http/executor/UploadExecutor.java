@@ -48,7 +48,7 @@ public class UploadExecutor extends Executor{
 
         try {
             URL url=new URL(HttpUtils.addProtocol(request.getUrl()));
-            System.out.println(url.toString());
+            //System.out.println(url.toString());
             HttpConfig config=request.getConfig();
             connection=(HttpURLConnection)url.openConnection();
             connection.setUseCaches(config.isUseCaches());
@@ -72,8 +72,9 @@ public class UploadExecutor extends Executor{
             sender.sendMessage(request.getHandler(), response);
         }
         catch (IOException e) {
-            String response=getResponse(connection.getInputStream());
-            sender.sendMessage(request.getHandler(), response);
+            e.printStackTrace();
+            //String response=getResponse(connection.getInputStream());
+            //sender.sendMessage(request.getHandler(), response);
         }
         finally {
             if(connection!=null)
@@ -94,7 +95,7 @@ public class UploadExecutor extends Executor{
     private void addFilePart(Map<String,File> fileMap,DataOutputStream out,Handler handler) throws IOException {
 
         //DataOutputStream out = new DataOutputStream(outputStream);
-        int index=0;
+        int index=1;
         int fileCount=fileMap.size();
         for(Map.Entry entry:fileMap.entrySet())
         {
@@ -103,7 +104,7 @@ public class UploadExecutor extends Executor{
             out.writeBytes("Content-Disposition: form-data; name=\"" +entry.getKey()+ "\";filename=\"" +file.getName() + "\"" + this.crlf);
             out.writeBytes("Content-Type:"+ URLConnection.guessContentTypeFromName(file.getName())+this.crlf+this.crlf);
             DataInputStream in=new DataInputStream(new FileInputStream(file));
-            int bytes=0;
+            int bytes;
             byte[] buffer=new byte[1024];
             //two variable for progress
             long cur=0;

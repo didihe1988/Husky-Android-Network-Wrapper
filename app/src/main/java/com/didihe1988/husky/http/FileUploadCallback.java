@@ -15,7 +15,7 @@ public abstract class FileUploadCallback extends BaseCallback{
         switch (msg.what)
         {
             case MessageType.REQUEST_PROGRESS:
-                onProgress(bundle.getInt("fileCount"),bundle.getInt("curFile"),bundle.getLong("count"),bundle.getLong("cur"));
+                onProgress(bundle.getInt("fileCount"),bundle.getInt("curIndex"),bundle.getLong("fileLength"),bundle.getLong("curLength"));
                 break;
             case MessageType.REQUEST_SUCCESS:
                 onSuccess(bundle.getString("response"));
